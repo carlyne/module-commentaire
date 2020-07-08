@@ -23,9 +23,16 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
  * @ORM\Table(name="symfony_demo_post")
  * @UniqueEntity(fields={"slug"}, errorPath="title", message="post.slug_unique")
+ * 
  * @ApiResource(
- *  collectionOperations={},
- *  itemOperations={"get"}
+ *  collectionOperations = {},
+ *  itemOperations = {
+ *      "get" = {
+ *          "controller" = App\Controller\Api\EmptyController::class,
+ *          "read" = false,
+ *          "deserialize" = false
+ *      }
+ *  }
  * )
  *
  * Defines the properties of the Post entity to represent the blog posts.

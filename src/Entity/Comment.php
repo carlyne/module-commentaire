@@ -22,43 +22,46 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity
  * @ORM\Table(name="symfony_demo_comment")
+ * 
  * @ApiResource(
- *  attributes={
- *      "order"={"publishedAt":"DESC"}
+ *  attributes = {
+ *      "order" = { "publishedAt":"DESC" }
  *  },
  * 
- *  paginationItemsPerPage=2,
+ *  paginationItemsPerPage = 2,
  * 
- *  normalizationContext={"groups"={"read:comment"}},
+ *  normalizationContext = { "groups" = { "read:comment" } },
  * 
- *  collectionOperations={
+ *  collectionOperations = {
  *      "get", 
- *      "post"={
- *          "security"="is_granted('IS_AUTHENTICATED_FULLY')",
- *          "controller"=App\Controller\Api\CommentCreateController::class
+ *      "post" = {
+ *          "security" = "is_granted('IS_AUTHENTICATED_FULLY')",
+ *          "controller" = App\Controller\Api\CommentCreateController::class,
+ *          "denormalization_context"={ "groups" = { "create:comment" } }
  *      }
  *  },
  * 
- *  itemOperations={
- *      "get"={
- *          "normalization_context"={
- *              "groups"= {
+ *  itemOperations = {
+ *      "get" = {
+ *          "normalization_context" = {
+ *              "groups" = {
  *                  "read:comment", "read:full:comment"
  *              }
  *          }
  *      },
- *      "put"={
- *          "security"="is_granted('EDIT_COMMENT', object)"
+ *      "put" = {
+ *          "security" = "is_granted('EDIT_COMMENT', object)",
+ *          "denormalization_context"={ "groups" = { "create:comment" } }
  *      },
- *      "delete"={
- *          "security"="is_granted('EDIT_COMMENT', object)"
+ *      "delete" = {
+ *          "security" = "is_granted('EDIT_COMMENT', object)"
  *      }
  *  }
  * )
  * 
  * @ApiFilter(
  *  SearchFilter::class,
- *  properties={"post": "exact"}
+ *  properties = { "post": "exact" }
  * )
  *
  * Defines the properties of the Comment entity to represent the blog comments.
@@ -77,49 +80,58 @@ class Comment
      *
      * @ORM\Id
      * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     * @Groups({"read:comment"})
+     * @ORM\Column(type = "integer")
+     * @Groups({ "read:comment" })
      */
     private $id;  
 
     /**
      * @var Post
      *
-     * @ORM\ManyToOne(targetEntity="Post", inversedBy="comments")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"read:full:comment"})
+     * @ORM\ManyToOne(targetEntity = "Post", inversedBy = "comments")
+     * @ORM\JoinColumn(nullable = false)
+     * 
+     * @Groups({
+     *  "read:full:comment",
+     *  "create:comment"
+     * })
      */
     private $post;
 
     /**
      * @var string
      *
-     * @ORM\Column(type="text")
-     * @Assert\NotBlank(message="comment.blank")
+     * @ORM\Column(type = "text")
+     * @Assert\NotBlank(message = "comment.blank")
      * @Assert\Length(
-     *     min=5,
-     *     minMessage="comment.too_short",
-     *     max=10000,
-     *     maxMessage="comment.too_long"
+     *     min = 5,
+     *     minMessage = "comment.too_short",
+     *     max = 10000,
+     *     maxMessage = "comment.too_long"
      * )
-     * @Groups({"read:comment"})
+     * 
+     * @Groups({ 
+     *  "read:comment",
+     *  "create:comment",
+     *  "update:comment" 
+     * })
      */
     private $content;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="datetime")
-     * @Groups({"read:comment"})
+     * @ORM\Column(type = "datetime")
+     * @Groups({ "read:comment" })
      */
     private $publishedAt;
 
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
-     * @Groups({"read:comment"})
+     * @ORM\ManyToOne(targetEntity = "App\Entity\User")
+     * @ORM\JoinColumn(nullable = false)
+     * @Groups({ "read:comment" })
      */
     private $author;
 
