@@ -3,20 +3,48 @@
 namespace App\Security;
 
 use App\Entity\Comment;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class CommentVoter extends Voter
 {
 
-	protected function supports(string $attribute, Comment $subject)
+	const EDIT = 'EDIT_COMMENT';
+
+	/**
+	 * Vérifie que l'authentification est bien celle demandée, si c'est faux, on ne vote pas
+	 *
+	 * @param string $attribute
+	 * @param mixed $subject
+	 * @return boolean
+	 */
+	protected function supports(string $attribute, $subject)
 	{
-		// code
+		return
+			$attribute === self::EDIT &&
+			$subject instanceof Comment;
+
 	}
 
-	protected function voteOnAttribute(string $attribute, Comment $subject, TokenInterface $token)
+	/**
+	 * Donne la permission d'édition si le support a permi de voter
+	 *
+	 * @param string $attribute
+	 * @param mixed $subject
+	 * @param TokenInterface $token
+	 * @return boolean
+	 */
+	protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
 	{
-		// code
+		$user = $token->getUser();
+
+		if(!$user instanceof User || !$subject instanceof Comment) {
+			return false;
+		}
+
+		// si les identifiants matchent, l'utilisateur a la permission
+		return $subject->getAuthor()->getId() === $user->getId();
 	}
 
 

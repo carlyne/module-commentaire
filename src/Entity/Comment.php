@@ -49,6 +49,9 @@ use Symfony\Component\Validator\Constraints as Assert;
  *      },
  *      "put"={
  *          "security"="is_granted('EDIT_COMMENT', object)"
+ *      },
+ *      "delete"={
+ *          "security"="is_granted('EDIT_COMMENT', object)"
  *      }
  *  }
  * )
